@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This is a bash script used to set up OpenVPN on a Debian distro
+# by Josh Hale https://github.com/jhale85446
+
 traffic=""
 port=1194
 good=0
@@ -66,7 +69,7 @@ while [ $good -eq 0 ]; do
   printf "1 for Blowfish CBC\n"
   printf "2 for AES-128 CBC\n"
   printf "3 for Triple-DES CBC (Not recommended!)\n"
-  printf "\n Cipher to use: "
+  printf "\nCipher to use: "
   read choice
 
   if [ ! -z ${choice// } ]; then
@@ -92,6 +95,50 @@ while [ $good -eq 0 ]; do
 done
 
 printf "\nVPN cipher set to: $cipher_output\n"
+
+# Add subnet routes to be pushed to the clients
+
+good=0
+add_subnets=0
+while [ $good -eq 0 ]; do
+  printf "\nWould you like to push any routes to local (server side) subnets to the clients? [y or n] "
+  read choice
+  if [ "$choice" == "y" ]; then
+    add_subnets=1
+    good=1
+  elif [ "$choice" == "n" ]; then
+    good=1
+  fi
+done
+
+subnet_count=0
+while [ $add_subnets -eq 1 ]; do
+  good=0
+  printf "\nPlease enter the subnet in the following format: IPv4subnet IPv4netmask\n"
+  printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+  printf "Example: 192.168.1.0 255.255.255.0\n"
+  printf "\nSubnet: "
+  read subnets[${subnet_count}]
+  (( subnet_count += 1 ))
+
+  while [ $good -eq 0 ]; do
+    printf "\nWould you like to push any additional routes to local (server side) subnets to the clients? [y or n] "
+    read choice
+    if [ "$choice" == "y" ]; then
+      good=1
+      add_subnets=1
+    elif [ "$choice" == "n" ]; then
+      good=1
+      add_subnets=0
+    fi
+  done
+done
+
+printf "\nThe following subnets will be pushed to the clients: \n"
+count=${#subnets[@]}
+for (( i=0;i<$count;i++)); do
+    printf "\t${subnets[${i}]}\n"
+done
 
 #printf "\nInstalling OpenVPN and Easy-RSA\n\n"
 #apt-get update
