@@ -1,27 +1,127 @@
 #!/bin/bash
 
-printf "\nInstalling OpenVPN and Easy-RSA\n\n"
-apt-get update
-apt-get install -y openvpn easy-rsa
-printf "_________________________________________________________________\n"
+traffic=""
+port=1194
+good=0
+cipher=1
+cipher_output=""
 
-printf "\nUnzipping the sample server config file to use as a base.\n\n"
-gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
-[ -f /etc/openvpn/server.conf ] && echo "Done - Moving on" || echo "Something messed up."
-printf "_________________________________________________________________\n"
+printf "\nWelcome to OpenVPN Setup Script by Josh Hale\n"
+printf "Have a few questions before we begin...\n\n"
 
-printf "\nChanging Initial Server Settings.\n\n"
-printf "Changing Encryption Level: 'dh dh1024.pem' -> 'dh dh2048.pem'\n"
-sed -i 's/dh dh1024.pem/dh dh2048.pem/g' /etc/openvpn/server.conf
-printf "Allowing Web Traffic Forwarding\n"
-sed -i 's/;push "redirect-gateway def1 bypass-dhcp"/push "redirect-gateway def1 bypass-dhcp"/g' /etc/openvpn/server.conf
-printf "Setting Clients to Use OpenDNS when possible\n"
-sed -i 's/;push "dhcp-option DNS 208.67.222.222"/push "dhcp-option DNS 208.67.222.222"/g' /etc/openvpn/server.conf
-sed -i 's/;push "dhcp-option DNS 208.67.220.220"/push "dhcp-option DNS 208.67.220.220"/g' /etc/openvpn/server.conf
-printf "Setting Server Permissions\n"
-sed -i 's/;user nobody/user nobody/g' /etc/openvpn/server.conf
-sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/server.conf
-printf "_________________________________________________________________\n"
+#Select the type of traffic TCP or UDP
+while [ "$traffic" == "" ]; do
+  printf "Do you want to use UDP or TCP for VPN traffic?\n"
+  printf "UDP is default. However, many firewalls block non-DNS UDP traffic\n"
+  printf "TCP is recommended.\n\n"
+  printf "1 for UDP\n"
+  printf "2 for TCP\n"
+  printf "\nSelect a traffic type: "
+  read choice
+  
+  if [ ! -z ${choice// } ]; then
+    if [ $choice -eq 1 ]; then
+      printf "UDP traffic selected.\n"
+      traffic="UDP"
+    elif [ $choice -eq 2 ]; then
+      printf "TCP traffic selected.\n"
+      traffic="TCP"
+    else
+      printf "Please enter either 1 or 2 to select UDP or TCP.\n\n"
+    fi
+  fi
+done
+
+printf "\nVPN traffic is set to: $traffic\n"
+
+#Select the port to operate on
+while [ $good -eq 0 ]; do
+  if [ "$traffic" == "UDP" ]; then
+    printf "\nWhich port would you like to use? Default is port 1194. Many firewalls block non-DNS UDP traffic. DNS is on port 53.\n"
+  else
+    printf "\nWhich port would you like to use? Default is port 1194. Firewalls may block uncommon TCP ports. You may want to use one of these:\n"
+    printf "HTTP: 80\n"
+    printf "HTTPS: 443 (This is a good option if your local port 443 is not being used. It will look like https traffic to firewalls.)\n"
+    printf "Default port is generally ok.\n"
+  fi
+  printf "\nPort: [Enter for 1194] "
+  read choice
+
+  if [ ! -z ${choice// } ]; then
+    if [ $choice -ge 1 -a $choice -le 65535 ]; then
+      port=$choice
+      good=1
+    fi
+  else
+     good=1
+  fi
+done
+
+printf "\nVPN port is set to: $port\n"
+
+#Select the cipher to use
+good=0
+while [ $good -eq 0 ]; do
+  printf "\nWhich cipher do you want to use? Blowfish is default. However, most modern processors have AES built-in and it might be faster.\n\n"
+  printf "1 for Blowfish CBC\n"
+  printf "2 for AES-128 CBC\n"
+  printf "3 for Triple-DES CBC (Not recommended!)\n"
+  printf "\n Cipher to use: "
+  read choice
+
+  if [ ! -z ${choice// } ]; then
+    if [ $choice -eq 1 ]; then
+      printf "Blowfish CBC Selected.\n"
+      cipher=1
+      cipher_output="cipher BF-CBC        # Blowfish (default)"
+      good=1
+    elif [ $choice -eq 2 ]; then
+      printf "AES-128 CBC Selected.\n"
+      cipher=2
+      cipher_output="cipher AES-128-CBC   # AES"
+      good=1
+    elif [ $choice -eq 3 ]; then
+      printf "Triple-DES CBC Selected.\n"
+      cipher=3
+      cipher_output="cipher DES-EDE3-CBC  # Triple-DES"
+      good=1
+    else
+      printf "Please enter 1, 2, or 3 to select a cipher.\n\n"
+    fi
+  fi
+done
+
+printf "\nVPN cipher set to: $cipher_output\n"
+
+#printf "\nInstalling OpenVPN and Easy-RSA\n\n"
+#apt-get update
+#apt-get install -y openvpn easy-rsa
+#printf "_________________________________________________________________\n"
+
+#printf "\nUnzipping the sample server config file to use as a base.\n\n"
+#gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
+
+#if [ -f /etc/openvpn/server.conf ]; then
+#  printf "Done - Moving on\n"
+#else
+#  printf "Something messed up. Exiting.\n"
+#  exit 1
+#fi
+
+#printf "_________________________________________________________________\n"
+
+#printf "\nChanging Initial Server Settings.\n\n"
+#printf "Changing Encryption Level: 'dh dh1024.pem' -> 'dh dh2048.pem'\n"
+#sed -i 's/dh dh1024.pem/dh dh2048.pem/g' /etc/openvpn/server.conf
+#printf "Allowing Web Traffic Forwarding\n"
+#sed -i 's/;push "redirect-gateway def1 bypass-dhcp"/push "redirect-gateway def1 bypass-dhcp"/g' /etc/openvpn/server.conf
+#printf "Setting Clients to Use OpenDNS when possible\n"
+#sed -i 's/;push "dhcp-option DNS 208.67.222.222"/push "dhcp-option DNS 208.67.222.222"/g' /etc/openvpn/server.conf
+#sed -i 's/;push "dhcp-option DNS 208.67.220.220"/push "dhcp-option DNS 208.67.220.220"/g' /etc/openvpn/server.conf
+#printf "Setting Server Permissions\n"
+#sed -i 's/;user nobody/user nobody/g' /etc/openvpn/server.conf
+#sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/server.conf
+#printf "_________________________________________________________________\n"
 
 
 
