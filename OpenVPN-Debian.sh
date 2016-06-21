@@ -318,10 +318,10 @@ mkdir /etc/openvpn/easy-rsa/keys
 printf "\nNeed to get some information from you to set up your certificates...\n\n"
 
 dne=0
-while [ $done -eq 0 ]; then
+while [ $done -eq 0 ]; do
   #Country
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your Country [ie US]: "
     read country
     if [ ! -z ${country// } ]; then
@@ -332,7 +332,7 @@ while [ $done -eq 0 ]; then
 
   #State
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your Province or State [ie IA]: "
     read state
     if [ ! -z ${state// } ]; then
@@ -343,7 +343,7 @@ while [ $done -eq 0 ]; then
 
   #City
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your City [ie Ames]: "
     read city
     if [ ! -z ${city// } ]; then
@@ -354,7 +354,7 @@ while [ $done -eq 0 ]; then
 
   #Organization
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your Organization [ie Evil Corp]: "
     read org
     if [ ! -z ${org// } ]; then
@@ -365,7 +365,7 @@ while [ $done -eq 0 ]; then
 
   #email
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your Email Address [ie john@ecorp.com]: "
     read email
     if [ ! -z ${email// } ]; then
@@ -376,7 +376,7 @@ while [ $done -eq 0 ]; then
 
   #OrganizationalUnit
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Enter your Organizational Unit [ie Hacker Defense]: "
     read OU
     if [ ! -z ${OU// } ]; then
@@ -394,7 +394,7 @@ while [ $done -eq 0 ]; then
   printf "$key_ou\n\n"
 
   good=0
-  while [ $good -eq 0 ]; then
+  while [ $good -eq 0 ]; do
     printf "Is this information correct [y or n]: "
     read choice
     if [ ! -z ${choice// } ]; then
