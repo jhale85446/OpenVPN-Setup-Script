@@ -242,8 +242,8 @@ while [ $add_exceptions -eq 1 ]; do
   good=0
   printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)"
   printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
-  printf "Example: 80\\tcp\n"
-  printf "\nPort\\Protocol: "
+  printf "Example: 80/tcp\n"
+  printf "\nPort/Protocol: "
   read exceptions[${exceptions_count}]
   (( exceptions_count += 1 ))
 
@@ -278,6 +278,11 @@ ifconfig
 printf "\nYou need to select an interface for OpenVPN to operate on.\n"
 printf "Enter the interface [enter for eth0]: "
 read interface
+
+if [ -z ${interface// } ]; then
+  interface="eth0"
+fi
+
 printf "\nSetting up UFW to use interface $interface\n"
 
 printf "Changing Default Forward Policy to ACCEPT\n"
