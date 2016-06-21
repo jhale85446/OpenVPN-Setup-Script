@@ -210,7 +210,11 @@ if [ $subnet_count -gt 0 ]; then
     sed -i "/^# back to the OpenVPN server.*/a $subnet_string" /etc/openvpn/server.conf
   done
 fi
+printf "_________________________________________________________________\n"
 
+printf "\nEnabling Packet Forwarding\n"
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 printf "_________________________________________________________________\n"
 
 exit 0
