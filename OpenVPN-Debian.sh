@@ -174,15 +174,42 @@ sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/server.conf
 
 printf "Setting VPN Traffic Type to $traffic\n"
 if [ "$traffic" == "UDP" ]; then
-  sed -i 's/;proto udp/proto udp/g' /etc/openvpn/server.conf
-  sed -i 's/proto tcp/;proto tcp/g' /etc/openvpn/server.conf
+  sed -i 's/^;proto udp/proto udp/g' /etc/openvpn/server.conf
+  sed -i 's/^proto tcp/;proto tcp/g' /etc/openvpn/server.conf
 else
-  sed -i 's/proto udp/;proto udp/g' /etc/openvpn/server.conf
-  sed -i 's/;proto tcp/proto tcp/g' /etc/openvpn/server.conf
+  sed -i 's/^proto udp/;proto udp/g' /etc/openvpn/server.conf
+  sed -i 's/^;proto tcp/proto tcp/g' /etc/openvpn/server.conf
 fi
 
 printf "Setting VPN Port to $port\n"
-sed -i 's/^port.*/port '$port'/g' /etc/openvpn/server.conf
+sed -i "s/^port.*/port $port/g" /etc/openvpn/server.conf
+
+if [ $cipher -eq 1 ]; then
+  printf "Setting VPN Cipher to Blowfish\n"
+  sed -i 's/^;cipher BF-CBC.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
+  sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
+  sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+elif [ $cipher -eq 2 ]; then
+  printf "Setting VPN Cipher to AES\n"
+  sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
+  sed -i 's/^;cipher AES-128-CBC.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
+  sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+else
+  printf "Setting VPN Cipher to Triple-DES\n"
+  sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
+  sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
+  sed -i 's/^;cipher DES-EDE3-CBC.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+fi
+
+if [ $subnet_count -gt 0 ]; then
+
+  count=${#subnets[@]}
+  for (( i=0;i<$count;i++)); do
+    subnet_string="push \"route ${subnets[${i}]}\""
+    printf "Adding Client Route to ${subnets[${i}]}\n"
+    sed -i "/^# back to the OpenVPN server.*/a $subnet_string" /etc/openvpn/server.conf
+  done
+fi
 
 printf "_________________________________________________________________\n"
 
