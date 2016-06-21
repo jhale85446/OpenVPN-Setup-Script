@@ -315,8 +315,113 @@ printf "_________________________________________________________________\n"
 printf "\nSetting up Certificate Authority and RSA Keys\n"
 cp -r /usr/share/easy-rsa/ /etc/openvpn
 mkdir /etc/openvpn/easy-rsa/keys
+printf "\nNeed to get some information from you to set up your certificates...\n\n"
 
+dne=0
+while [ $done -eq 0 ]; then
+  #Country
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your Country [ie US]: "
+    read country
+    if [ ! -z ${country// } ]; then
+      key_country="export KEY_COUNTRY=\"$country\""
+      good=1
+    fi
+  done
+
+  #State
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your Province or State [ie IA]: "
+    read state
+    if [ ! -z ${state// } ]; then
+      key_state="export KEY_PROVINCE=\"$state\""
+      good=1
+    fi
+  done
+
+  #City
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your City [ie Ames]: "
+    read city
+    if [ ! -z ${city// } ]; then
+      key_city="export KEY_CITY=\"$city\""
+      good=1
+    fi
+  done
+
+  #Organization
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your Organization [ie Evil Corp]: "
+    read org
+    if [ ! -z ${org// } ]; then
+      key_org="export KEY_ORG=\"$org\""
+      good=1
+    fi
+  done
+
+  #email
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your Email Address [ie john@ecorp.com]: "
+    read email
+    if [ ! -z ${email// } ]; then
+      key_email="export KEY_EMAIL=\"$email\""
+      good=1
+    fi
+  done
+
+  #OrganizationalUnit
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Enter your Organizational Unit [ie Hacker Defense]: "
+    read OU
+    if [ ! -z ${OU// } ]; then
+      key_ou="export KEY_OU=\"$OU\""
+      good=1
+    fi
+  done
+
+  printf "\nThis is the output that will be written into the RSA Vars file:\n\n"
+  printf "$key_country\n"
+  printf "$key_state\n"
+  printf "$key_city\n"
+  printf "$key_org\n"
+  printf "$key_email\n"
+  printf "$key_ou\n\n"
+
+  good=0
+  while [ $good -eq 0 ]; then
+    printf "Is this information correct [y or n]: "
+    read choice
+    if [ ! -z ${choice// } ]; then
+      if [ "$choice" == "y" ]; then
+        good=1
+        dne=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      else
+        good=0
+      fi
+    fi
+  done
+done
+
+sed -i 's/^export KEY_COUNTRY.*/'$key_country'/g' /etc/openvpn/easy-rsa/vars
+sed -i 's/^export KEY_PROVINCE.*/'$key_state'/g' /etc/openvpn/easy-rsa/vars
+sed -i 's/^export KEY_CITY.*/'$key_city'/g' /etc/openvpn/easy-rsa/vars
+sed -i 's/^export KEY_ORG.*/'$key_org'/g' /etc/openvpn/easy-rsa/vars
+sed -i 's/^export KEY_EMAIL.*/'$key_email'/g' /etc/openvpn/easy-rsa/vars
+sed -i 's/^export KEY_OU.*/'$key_ou'/g' /etc/openvpn/easy-rsa/vars
+
+sed -i 's/^export KEY_NAME.*/export KEY_NAME="server"/g' /etc/openvpn/easy-rsa/vars
+
+printf "_________________________________________________________________\n"
 exit 0
+
 
 
 
