@@ -117,9 +117,13 @@ while [ $add_subnets -eq 1 ]; do
   printf "\nPlease enter the subnet in the following format: IPv4subnet IPv4netmask\n"
   printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
   printf "Example: 192.168.1.0 255.255.255.0\n"
-  printf "\nSubnet: "
-  read subnets[${subnet_count}]
-  (( subnet_count += 1 ))
+  printf "\nSubnet [Press Enter to Abort Entry]: "
+  read response
+
+  if [ ! -z ${response// } ]; then  
+    subnets[${subnet_count}]=$response
+    (( subnet_count += 1 ))
+  fi
 
   while [ $good -eq 0 ]; do
     printf "\nWould you like to push any additional routes to local (server side) subnets to the clients? [y or n] "
@@ -243,9 +247,13 @@ while [ $add_exceptions -eq 1 ]; do
   printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)"
   printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
   printf "Example: 80/tcp\n"
-  printf "\nPort/Protocol: "
-  read exceptions[${exceptions_count}]
-  (( exceptions_count += 1 ))
+  printf "\nPort/Protocol [Press Enter to Abort Entry]: "
+  read response
+
+  if [ ! -z ${response// } ]; then  
+    exceptions[${exceptions_count}]=$response
+   (( exceptions_count += 1 ))
+  fi
 
   while [ $good -eq 0 ]; do
     printf "\nWould you like to open any other ports? [y or n] "
@@ -276,6 +284,7 @@ fi
 printf "_________________________________________________________________\n"
 ifconfig
 printf "\nYou need to select an interface for OpenVPN to operate on.\n"
+printf "Make sure you look at the interface list above, not all distros use eth0 anymore!\n"
 printf "Enter the interface [enter for eth0]: "
 read interface
 
@@ -297,9 +306,10 @@ sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -
 sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i #" /etc/ufw/before.rules
-
 printf "_________________________________________________________________\n"
-
+printf "\nEnabling UFW\n"
+ufw enable
+ufw status
 exit 0
 
 
