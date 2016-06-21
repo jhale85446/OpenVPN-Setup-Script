@@ -312,6 +312,9 @@ ufw enable
 printf "\n"
 ufw status
 printf "_________________________________________________________________\n"
+printf "\nSetting up Certificate Authority and RSA Keys\n"
+cp -r /usr/share/easy-rsa/ /etc/openvpn
+mkdir /etc/openvpn/easy-rsa/keys
 
 exit 0
 
