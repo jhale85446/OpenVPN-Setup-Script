@@ -410,12 +410,12 @@ while [ $dne -eq 0 ]; do
   done
 done
 
-sed -i 's/^export KEY_COUNTRY.*/'$key_country'/g' /etc/openvpn/easy-rsa/vars
-sed -i 's/^export KEY_PROVINCE.*/'$key_state'/g' /etc/openvpn/easy-rsa/vars
-sed -i 's/^export KEY_CITY.*/'$key_city'/g' /etc/openvpn/easy-rsa/vars
-sed -i 's/^export KEY_ORG.*/'$key_org'/g' /etc/openvpn/easy-rsa/vars
-sed -i 's/^export KEY_EMAIL.*/'$key_email'/g' /etc/openvpn/easy-rsa/vars
-sed -i 's/^export KEY_OU.*/'$key_ou'/g' /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_COUNTRY.*/$key_country/g" /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_PROVINCE.*/$key_state/g" /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_CITY.*/$key_city/g" /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_ORG.*/$key_org/g" /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_EMAIL.*/$key_email/g" /etc/openvpn/easy-rsa/vars
+sed -i "s/^export KEY_OU.*/$key_ou/g" /etc/openvpn/easy-rsa/vars
 
 sed -i 's/^export KEY_NAME.*/export KEY_NAME="server"/g' /etc/openvpn/easy-rsa/vars
 
