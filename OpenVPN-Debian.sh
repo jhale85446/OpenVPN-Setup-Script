@@ -273,6 +273,13 @@ if [ $exceptions_count -gt 0 ]; then
   done
 fi
 
+printf "_________________________________________________________________\n"
+ifconfig
+printf "\nYou need to select an interface for OpenVPN to operate on.\n"
+printf "Enter the interface [enter for eth0]: "
+read interface
+printf "\nSetting up UFW to use interface $interface\n"
+
 printf "Changing Default Forward Policy to ACCEPT\n"
 sed -i 's/DEFAULT_FORWARD_POLICY="DROP"/DEFAULT_FORWARD_POLICY="ACCEPT"/g' /etc/default/ufw
 printf "Adding OpenVPN Firewall Rules\n"
@@ -280,8 +287,8 @@ sed -i "/^# Don't delete these required lines.*/i # START OPENVPN RULES" /etc/uf
 sed -i "/^# Don't delete these required lines.*/i # NAT table rules" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i *nat" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i :POSTROUTING ACCEPT [0:0]" /etc/ufw/before.rules
-sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN client to eth0" /etc/ufw/before.rules
-sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o eth0 -j MASQUERADE" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN client to $interface" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o $interface -j MASQUERADE" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i #" /etc/ufw/before.rules
