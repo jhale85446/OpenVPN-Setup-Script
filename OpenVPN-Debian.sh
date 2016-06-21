@@ -420,10 +420,10 @@ sed -i "s/^export KEY_OU.*/$key_ou/g" /etc/openvpn/easy-rsa/vars
 sed -i 's/^export KEY_NAME.*/export KEY_NAME="server"/g' /etc/openvpn/easy-rsa/vars
 printf "_________________________________________________________________\n"
 
-printf "Generating Diffie-Helman parameters. This may take a while...\n\n"
-openssl dhparam -out /etc/openvpn/dh2048.pem 2048
-printf "\nDone... Moving on.\n"
-printf "_________________________________________________________________\n"
+#printf "Generating Diffie-Helman parameters. This may take a while...\n\n"
+#openssl dhparam -out /etc/openvpn/dh2048.pem 2048
+#printf "\nDone... Moving on.\n"
+#printf "_________________________________________________________________\n"
 exit 0
 
 
