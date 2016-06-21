@@ -234,7 +234,7 @@ sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN c
 sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o eth0 -j MASQUERADE" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
-sed -i "/^# Don't delete these required lines.*/i " /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i \n" /etc/ufw/before.rules
 
 exit 0
 
