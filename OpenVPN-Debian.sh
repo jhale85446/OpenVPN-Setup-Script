@@ -217,15 +217,65 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 printf "_________________________________________________________________\n"
 
-printf "\nInstalling UFW and Configuring\n\n"
+printf "\nInstalling UFW\n\n"
 apt-get install -y ufw
+printf "\n_________________________________________________________________\n"
+
+printf "\nConfiguring UFW and OpenVPN\n"
+
+printf "\nThis script will open SSH and port $port/$traffic by default.\n"
+good=0
+add_exceptions=0
+while [ $good -eq 0 ]; do
+  printf "\nWould you like to open any other ports? [y or n] "
+  read choice
+  if [ "$choice" == "y" ]; then
+    add_exceptions=1
+    good=1
+  elif [ "$choice" == "n" ]; then
+    good=1
+  fi
+done
+
+exceptions_count=0
+while [ $add_exceptions -eq 1 ]; do
+  good=0
+  printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)"
+  printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+  printf "Example: 80\\tcp\n"
+  printf "\nPort\\Protocol: "
+  read exceptions[${exceptions_count}]
+  (( exceptions_count += 1 ))
+
+  while [ $good -eq 0 ]; do
+    printf "\nWould you like to open any other ports? [y or n] "
+    read choice
+    if [ "$choice" == "y" ]; then
+      good=1
+      add_exceptions=1
+    elif [ "$choice" == "n" ]; then
+      good=1
+      add_exceptions=0
+    fi
+  done
+done
+
 printf "\nAllowing SSH\n"
 ufw allow ssh
 printf "Allowing $port/$traffic\n"
 ufw allow $port/$traffic
+
+if [ $exceptions_count -gt 0 ]; then
+  count=${#exceptions[@]}
+  for (( i=0;i<$count;i++)); do
+    printf "Allowing ${exceptions[${i}]}\n"
+    ufw allow ${exceptions[${i}]}
+  done
+fi
+
 printf "Changing Default Forward Policy to ACCEPT\n"
 sed -i 's/DEFAULT_FORWARD_POLICY="DROP"/DEFAULT_FORWARD_POLICY="ACCEPT"/g' /etc/default/ufw
-printf "Adding OpenVPN Firewall Rules"
+printf "Adding OpenVPN Firewall Rules\n"
 sed -i "/^# Don't delete these required lines.*/i # START OPENVPN RULES" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # NAT table rules" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i *nat" /etc/ufw/before.rules
@@ -234,8 +284,9 @@ sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN c
 sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o eth0 -j MASQUERADE" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
-line="\n"
-sed -i "/^# Don't delete these required lines.*/i $line" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i #" /etc/ufw/before.rules
+
+printf "_________________________________________________________________\n"
 
 exit 0
 
