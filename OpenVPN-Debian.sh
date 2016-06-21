@@ -318,7 +318,7 @@ mkdir /etc/openvpn/easy-rsa/keys
 printf "\nNeed to get some information from you to set up your certificates...\n\n"
 
 dne=0
-while [ $done -eq 0 ]; do
+while [ $dne -eq 0 ]; do
   #Country
   good=0
   while [ $good -eq 0 ]; do
