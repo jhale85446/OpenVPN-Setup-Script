@@ -244,7 +244,7 @@ done
 exceptions_count=0
 while [ $add_exceptions -eq 1 ]; do
   good=0
-  printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)"
+  printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)\n"
   printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
   printf "Example: 80/tcp\n"
   printf "\nPort/Protocol [Press Enter to Abort Entry]: "
@@ -307,9 +307,12 @@ sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
 sed -i "/^# Don't delete these required lines.*/i #" /etc/ufw/before.rules
 printf "_________________________________________________________________\n"
-printf "\nEnabling UFW\n"
+printf "\nEnabling UFW\n\n"
 ufw enable
+printf "\n"
 ufw status
+printf "_________________________________________________________________\n"
+
 exit 0
 
 
