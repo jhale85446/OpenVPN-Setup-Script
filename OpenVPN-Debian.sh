@@ -25,10 +25,10 @@ while [ "$traffic" == "" ]; do
   if [ ! -z ${choice// } ]; then
     if [ $choice -eq 1 ]; then
       printf "UDP traffic selected.\n"
-      traffic="UDP"
+      traffic="udp"
     elif [ $choice -eq 2 ]; then
       printf "TCP traffic selected.\n"
-      traffic="TCP"
+      traffic="tcp"
     else
       printf "Please enter either 1 or 2 to select UDP or TCP.\n\n"
     fi
@@ -173,7 +173,7 @@ sed -i 's/;user nobody/user nobody/g' /etc/openvpn/server.conf
 sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/server.conf
 
 printf "Setting VPN Traffic Type to $traffic\n"
-if [ "$traffic" == "UDP" ]; then
+if [ "$traffic" == "udp" ]; then
   sed -i 's/^;proto udp/proto udp/g' /etc/openvpn/server.conf
   sed -i 's/^proto tcp/;proto tcp/g' /etc/openvpn/server.conf
 else
@@ -216,6 +216,25 @@ printf "\nEnabling Packet Forwarding\n"
 echo 1 > /proc/sys/net/ipv4/ip_forward
 sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 printf "_________________________________________________________________\n"
+
+printf "\nInstalling UFW and Configuring\n\n"
+apt-get install -y ufw
+printf "\nAllowing SSH\n"
+ufw allow ssh
+printf "Allowing $port/$traffic\n"
+ufw allow $port/$traffic
+printf "Changing Default Forward Policy to ACCEPT\n"
+sed -i 's/DEFAULT_FORWARD_POLICY="DROP"/DEFAULT_FORWARD_POLICY="ACCEPT"/g' /etc/default/ufw
+printf "Adding OpenVPN Firewall Rules"
+sed -i "/^# Don't delete these required lines.*/i # START OPENVPN RULES" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i # NAT table rules" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i *nat" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i :POSTROUTING ACCEPT [0:0]" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN client to eth0" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o eth0 -j MASQUERADE" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
+sed -i "/^# Don't delete these required lines.*/i " /etc/ufw/before.rules
 
 exit 0
 
