@@ -506,6 +506,14 @@ function start_openvpn
   printf "_________________________________________________________________\n"
 }
 
+function init_client
+{
+  printf "\nStarting the setup of the client config file.\n"
+  cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/easy-rsa/keys/client.ovpn
+  mkdir /etc/openvpn/clients
+}
+
+
 # Main Program
 
 intro
