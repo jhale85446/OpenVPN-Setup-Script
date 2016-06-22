@@ -472,6 +472,12 @@ function gen_dh
   printf "_________________________________________________________________\n"
 }
 
+function build_ca
+{
+  printf "\nNow to build the Certificate Authority for Your Server.\n"
+  eval '. ./vars'
+}
+
 # Main Program
 
 intro
@@ -491,7 +497,8 @@ intro
 #iptables_persist
 
 #init_rsa_ca
-gen_dh
+#gen_dh
+build_ca
 exit 0
 
 
