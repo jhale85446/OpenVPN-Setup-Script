@@ -202,7 +202,7 @@ function add_routes
     printf "\nPlease enter the subnet in the following format: IPv4subnet IPv4netmask\n"
     printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
     printf "Example: 192.168.1.0 255.255.255.0\n"
-    printf "\nSubnet [Press Enter to Abort Entry]: "
+    printf "\nSubnet [Press Enter on Empty Line to Abort Entry]: "
     read response
 
     if [ ! -z ${response// } ]; then  
@@ -265,7 +265,7 @@ function config_ufw
     printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)\n"
     printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
     printf "Example: 80/tcp\n"
-    printf "\nPort/Protocol [Press Enter to Abort Entry]: "
+    printf "\nPort/Protocol [Press Enter on Empty Line to Abort Entry]: "
     read response
 
     if [ ! -z ${response// } ]; then  
@@ -306,7 +306,7 @@ function select_interface
   ifconfig
   printf "\nYou need to select an interface for OpenVPN to operate on.\n"
   printf "Make sure you look at the interface list above, not all distros use eth0 anymore!\n"
-  printf "Enter the interface [enter for eth0]: "
+  printf "Enter the interface [Enter for eth0]: "
   read interface
 
   if [ -z ${interface// } ]; then
@@ -462,7 +462,7 @@ function gen_dh
 # Main Program
 
 intro
-#install_openvpn
+install_openvpn
 unpack_config
 init_setup
 select_traffic
