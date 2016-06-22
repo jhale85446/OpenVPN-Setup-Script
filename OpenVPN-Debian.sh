@@ -4,7 +4,7 @@
 # by Josh Hale https://github.com/jhale85446
 
 # Default Values
-traffic="udp"
+traffic=""
 port=1194
 good=0
 cipher=1
