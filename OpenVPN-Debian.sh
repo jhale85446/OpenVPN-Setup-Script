@@ -471,12 +471,12 @@ select_cipher
 add_routes
 enable_packet_forward
 
-#install_ufw
-#config_ufw
-#select_interface
-#enable_ufw
+install_ufw
+config_ufw
+select_interface
+enable_ufw
 
-#init_rsa_ca
+init_rsa_ca
 #gen_dh
 exit 0
 
