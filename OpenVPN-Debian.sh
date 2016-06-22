@@ -340,6 +340,16 @@ function enable_ufw
   printf "_________________________________________________________________\n"
 }
 
+function iptables_persist
+{
+  printf "\nInstalling IPTables-Persistent Package\n"
+  apt-get install -y iptables-persistent
+  printf "\nSetting IPTables-Persistent to start at boot.\n"
+  update-rc.d netfilter-persistent enable
+  printf "_________________________________________________________________\n"
+}
+
+
 function init_rsa_ca
 {
   printf "\nSetting up Certificate Authority and RSA Keys\n"
@@ -475,6 +485,7 @@ install_ufw
 config_ufw
 select_interface
 enable_ufw
+iptables_persist
 
 init_rsa_ca
 #gen_dh
