@@ -489,6 +489,17 @@ function build_ca
   # Edit build-key server to automate build
   sed -i 's#^"$EASY_RSA.*#"$EASY_RSA/pkitool" --server $*#g' /etc/openvpn/easy-rsa/build-key-server
   eval './build-key-server server'
+
+  printf "\nMoving Certificates and Keys so OpenVPN can Use Them.\n"
+  cp /etc/openvpn/easy-rsa/keys/{server.crt,server.key,ca.crt} /etc/openvpn
+  printf "_________________________________________________________________\n"
+}
+
+function start_openvpn
+{
+  printf "\nStarting the OpenVPN Service\n"
+  service openvpn start
+  service openvpn status
   printf "_________________________________________________________________\n"
 }
 
@@ -513,6 +524,7 @@ intro
 #init_rsa_ca
 #gen_dh
 build_ca
+start_openvpn
 exit 0
 
 
