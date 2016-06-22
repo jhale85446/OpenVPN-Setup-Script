@@ -198,24 +198,26 @@ function select_cipher
     fi
   done
 
+  sed -i 's/^;cipher.*/cipher x/g' /etc/openvpn/client.ovpn
+
   if [ $cipher -eq 1 ]; then
     printf "Setting VPN Cipher to Blowfish\n"
     sed -i 's/^;cipher BF-CBC.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/cipher.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/client.ovpn
+    sed -i 's/^cipher.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/client.ovpn
   elif [ $cipher -eq 2 ]; then
     printf "Setting VPN Cipher to AES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher AES-128-CBC.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/cipher.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/client.ovpn
+    sed -i 's/^cipher.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/client.ovpn
   else
     printf "Setting VPN Cipher to Triple-DES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher DES-EDE3-CBC.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/cipher.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/client.ovpn
+    sed -i 's/^cipher.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/client.ovpn
   fi
 }
 
