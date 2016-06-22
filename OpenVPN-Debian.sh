@@ -5,6 +5,7 @@
 
 # Default Values
 traffic=""
+ip_addr=""
 port=1194
 good=0
 cipher=1
@@ -63,9 +64,17 @@ function init_setup
   sed -i 's/;push "dhcp-option DNS 208.67.222.222"/push "dhcp-option DNS 208.67.222.222"/g' /etc/openvpn/server.conf
   sed -i 's/;push "dhcp-option DNS 208.67.220.220"/push "dhcp-option DNS 208.67.220.220"/g' /etc/openvpn/server.conf
 
-  printf "Setting Server Permissions\n"
+  printf "Setting Permissions\n"
   sed -i 's/;user nobody/user nobody/g' /etc/openvpn/server.conf
   sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/server.conf
+  sed -i 's/;user nobody/user nobody/g' /etc/openvpn/client.ovpn
+  sed -i 's/;group nogroup/group nogroup/g' /etc/openvpn/client.ovpn
+
+  printf "Setting up Client Config for Unified OpenVPN Profile.\n"
+  sed -i 's/^ca ca.crt/;ca ca.crt/g' /etc/openvpn/client.ovpn
+  sed -i 's/^cert client.crt/;cert client.crt/g' /etc/openvpn/client.ovpn
+  sed -i 's/^key client.key/;key client.key/g' /etc/openvpn/client.ovpn
+
   printf "_________________________________________________________________\n"
 }
 
@@ -98,15 +107,36 @@ function select_traffic
   if [ "$traffic" == "udp" ]; then
     sed -i 's/^;proto udp/proto udp/g' /etc/openvpn/server.conf
     sed -i 's/^proto tcp/;proto tcp/g' /etc/openvpn/server.conf
+    sed -i 's/^;proto udp/proto udp/g' /etc/openvpn/client.ovpn
+    sed -i 's/^proto tcp/;proto tcp/g' /etc/openvpn/client.ovpn
   else
     sed -i 's/^proto udp/;proto udp/g' /etc/openvpn/server.conf
     sed -i 's/^;proto tcp/proto tcp/g' /etc/openvpn/server.conf
+    sed -i 's/^proto udp/;proto udp/g' /etc/openvpn/client.ovpn
+    sed -i 's/^;proto tcp/proto tcp/g' /etc/openvpn/client.ovpn
   fi
+}
+
+function select_ip
+{
+  good=0
+  while [ $good -eq 0 ]; do
+    printf "\nWhat IPv4 address will the server be operating on?\n"
+    printf "If you are using a NAT, this will be your public facing IP address.\n"
+    printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+    printf "IPv4 Address: "
+    read ip_addr
+
+    if [ ! -z ${ip_addr// } ]; then
+      good=1
+    if
+  done
 }
 
 function select_port
 {
   #Select the port to operate on
+  good=0
   while [ $good -eq 0 ]; do
     if [ "$traffic" == "UDP" ]; then
       printf "\nWhich port would you like to use? Default is port 1194. Many firewalls block non-DNS UDP traffic. DNS is on port 53.\n"
@@ -130,6 +160,8 @@ function select_port
   done
   printf "Setting VPN Port to $port\n"
   sed -i "s/^port.*/port $port/g" /etc/openvpn/server.conf
+  printf "\nSetting Client to Point to Server at $ip_addr $port\n"
+  sed -i "s/^remote my-server-1 1194/remote $ip_addr $port/g" /etc/openvpn/client.ovpn
 }
 
 function select_cipher
@@ -171,16 +203,19 @@ function select_cipher
     sed -i 's/^;cipher BF-CBC.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+    sed -i 's/^;cipher x/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/client.ovpn
   elif [ $cipher -eq 2 ]; then
     printf "Setting VPN Cipher to AES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher AES-128-CBC.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+    sed -i 's/^;cipher x/cipher AES-128-CBC   # AES/g' /etc/openvpn/client.ovpn
   else
     printf "Setting VPN Cipher to Triple-DES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher DES-EDE3-CBC.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
+    sed -i 's/^;cipher x/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/client.ovpn
   fi
 }
 
@@ -514,10 +549,11 @@ function start_openvpn
 
 intro
 
-install_openvpn
+#install_openvpn
 unpack_config
 init_setup
 select_traffic
+select_ip
 select_port
 select_cipher
 add_routes
