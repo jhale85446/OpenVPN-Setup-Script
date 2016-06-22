@@ -466,7 +466,7 @@ function init_rsa_ca
 
 function gen_dh
 {
-  printf "Generating Diffie-Helman parameters. This may take a while...\n\n"
+  printf "\nGenerating Diffie-Helman parameters. This may take a while...\n\n"
   openssl dhparam -out /etc/openvpn/dh2048.pem 2048
   printf "\nDone... Moving on.\n"
   printf "_________________________________________________________________\n"
@@ -475,23 +475,23 @@ function gen_dh
 # Main Program
 
 intro
-install_openvpn
-unpack_config
-init_setup
-select_traffic
-select_port
-select_cipher
-add_routes
-enable_packet_forward
+#install_openvpn
+#unpack_config
+#init_setup
+#select_traffic
+#select_port
+#select_cipher
+#add_routes
+#enable_packet_forward
 
-install_ufw
-config_ufw
-select_interface
-enable_ufw
-iptables_persist
+#install_ufw
+#config_ufw
+#select_interface
+#enable_ufw
+#iptables_persist
 
-init_rsa_ca
-#gen_dh
+#init_rsa_ca
+gen_dh
 exit 0
 
 
