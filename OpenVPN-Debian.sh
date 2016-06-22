@@ -475,6 +475,7 @@ function gen_dh
 function build_ca
 {
   printf "\nNow to build the Certificate Authority for Your Server.\n"
+  cd /etc/openvpn/easy-rsa
   eval '. ./vars'
 }
 
