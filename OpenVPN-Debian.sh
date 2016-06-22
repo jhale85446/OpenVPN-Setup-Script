@@ -33,8 +33,12 @@ function install_ufw
 
 function unpack_config
 {
-  printf "\nUnzipping the sample server config file to use as a base.\n\n"
+  printf "\nUnzipping the sample server config file to use as a base.\n"
   gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
+
+  printf "Getting client config file to use as a base.\n"
+  cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/client.ovpn
+  mkdir /etc/openvpn/clients
 
   if [ -f /etc/openvpn/server.conf ]; then
     printf "Done - Moving on\n"
@@ -506,25 +510,18 @@ function start_openvpn
   printf "_________________________________________________________________\n"
 }
 
-function init_client
-{
-  printf "\nStarting the setup of the client config file.\n"
-  cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/easy-rsa/keys/client.ovpn
-  mkdir /etc/openvpn/clients
-}
-
-
 # Main Program
 
 intro
-#install_openvpn
-#unpack_config
-#init_setup
-#select_traffic
-#select_port
-#select_cipher
-#add_routes
-#enable_packet_forward
+
+install_openvpn
+unpack_config
+init_setup
+select_traffic
+select_port
+select_cipher
+add_routes
+enable_packet_forward
 
 #install_ufw
 #config_ufw
@@ -536,7 +533,6 @@ intro
 #gen_dh
 #build_ca
 #start_openvpn
-init_client
 exit 0
 
 
