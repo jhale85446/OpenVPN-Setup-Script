@@ -474,9 +474,13 @@ function gen_dh
 
 function build_ca
 {
-  printf "\nNow to build the Certificate Authority for Your Server.\n"
+  printf "\nNow to build the Certificate Authority for Your Server.\n\n"
   cd /etc/openvpn/easy-rsa
   eval '. ./vars'
+  printf "\nCleaning key directory\n"
+  eval './clean-all'
+  printf "Building the CA\n\n"
+  eval './build-ca'
 }
 
 # Main Program
