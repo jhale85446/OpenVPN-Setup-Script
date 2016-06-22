@@ -479,8 +479,17 @@ function build_ca
   eval '. ./vars'
   printf "\nCleaning key directory\n"
   eval './clean-all'
+  
   printf "Building the CA\n\n"
+  # Edit build-ca to automate build
+  sed -i 's/^"$EASY_RSA/pkitool".*/"$EASY_RSA/pkitool" --initca $*/g' /etc/openvpn/easy-rsa/build-ca
   eval './build-ca'
+
+  printf "\nGenerating a Certificate and Key for your Server\n\n"
+  # Edit build-key server to automate build
+  sed -i 's/^"$EASY_RSA/pkitool".*/""$EASY_RSA/pkitool" --server $*/g' /etc/openvpn/easy-rsa/build-key-server
+  eval './build-key-server server'
+  printf "_________________________________________________________________\n"
 }
 
 # Main Program
