@@ -129,7 +129,7 @@ function select_ip
 
     if [ ! -z ${ip_addr// } ]; then
       good=1
-    if
+    fi
   done
 }
 
@@ -161,7 +161,7 @@ function select_port
   printf "Setting VPN Port to $port\n"
   sed -i "s/^port.*/port $port/g" /etc/openvpn/server.conf
   printf "\nSetting Client to Point to Server at $ip_addr $port\n"
-  sed -i "s/^remote my-server-1 1194/remote $ip_addr $port/g" /etc/openvpn/client.ovpn
+  sed -i "s/^remote .*/remote $ip_addr $port/g" /etc/openvpn/client.ovpn
 }
 
 function select_cipher
@@ -203,19 +203,19 @@ function select_cipher
     sed -i 's/^;cipher BF-CBC.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/^;cipher x/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/client.ovpn
+    sed -i 's/cipher.*/cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/client.ovpn
   elif [ $cipher -eq 2 ]; then
     printf "Setting VPN Cipher to AES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher AES-128-CBC.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^cipher DES-EDE3-CBC.*/;cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/^;cipher x/cipher AES-128-CBC   # AES/g' /etc/openvpn/client.ovpn
+    sed -i 's/cipher.*/cipher AES-128-CBC   # AES/g' /etc/openvpn/client.ovpn
   else
     printf "Setting VPN Cipher to Triple-DES\n"
     sed -i 's/^cipher BF-CBC.*/;cipher BF-CBC        # Blowfish (default)/g' /etc/openvpn/server.conf
     sed -i 's/^cipher AES-128-CBC.*/;cipher AES-128-CBC   # AES/g' /etc/openvpn/server.conf
     sed -i 's/^;cipher DES-EDE3-CBC.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/server.conf
-    sed -i 's/^;cipher x/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/client.ovpn
+    sed -i 's/cipher.*/cipher DES-EDE3-CBC  # Triple-DES/g' /etc/openvpn/client.ovpn
   fi
 }
 
