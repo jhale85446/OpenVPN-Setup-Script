@@ -500,6 +500,9 @@ function start_openvpn
   printf "\nStarting the OpenVPN Service\n"
   service openvpn start
   service openvpn status
+
+  printf "\nSetting OpenVPN Service to Start at Boot\n"
+  update-rc.d openvpn enable
   printf "_________________________________________________________________\n"
 }
 
