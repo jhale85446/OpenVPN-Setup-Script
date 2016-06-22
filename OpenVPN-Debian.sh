@@ -342,7 +342,10 @@ function enable_ufw
 
 function iptables_persist
 {
-  printf "\nInstalling IPTables-Persistent Package\n"
+  printf "\nNext we need to install IPTables-Persistent to make sure UFW starts at boot.\n\n"
+  printf "During the install, you will be asked to save current settings. SELECT YES! [Enter to continue]: "
+  read nothing
+  printf "\nInstalling IPTables-Persistent Package\n\n"
   apt-get install -y iptables-persistent
   printf "\nSetting IPTables-Persistent to start at boot.\n"
   update-rc.d netfilter-persistent enable
