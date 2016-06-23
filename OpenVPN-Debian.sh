@@ -197,31 +197,47 @@ function select_ip
 function select_port
 {
   #Select the port to operate on
-  good=0
-  while [ $good -eq 0 ]; do
-    if [ "$traffic" == "UDP" ]; then
-      printf "\nWhich port would you like to use? Default is port 1194. Many firewalls block non-DNS UDP traffic. DNS is on port 53.\n"
-    else
-      printf "\nWhich port would you like to use? Default is port 1194. Firewalls may block uncommon TCP ports. You may want to use one of these:\n"
-      printf "HTTP: 80\n"
-      printf "HTTPS: 443 (This is a good option if your local port 443 is not being used. It will look like https traffic to firewalls.)\n"
-      printf "Default port is generally ok.\n"
-    fi
-    printf "\nPort: [Enter for 1194] "
-    read choice
+  correct=0
+  while [ $correct -eq 0 ]; do
+    good=0
+    while [ $good -eq 0 ]; do
+      if [ "$traffic" == "udp" ]; then
+        printf "\nWhich port would you like to use? Default is port 1194. Many firewalls block non-DNS UDP traffic. DNS is on port 53.\n"
+      else
+        printf "\nWhich port would you like to use? Default is port 1194. Firewalls may block uncommon TCP ports. You may want to use one of these:\n"
+        printf "HTTP: 80\n"
+        printf "HTTPS: 443 (This is a good option if your local port 443 is not being used. It will look like https traffic to firewalls.)\n"
+        printf "Default port is generally ok.\n"
+      fi
+      printf "\nPort: [Enter for 1194] "
+      read choice
 
-    if [ ! -z ${choice// } ]; then
-      if [ $choice -ge 1 -a $choice -le 65535 ]; then
-        port=$choice
+      if [ ! -z ${choice// } ]; then
+        if [ $choice -ge 1 -a $choice -le 65535 ]; then
+          port=$choice
+          good=1
+        fi
+      else
+         good=1
+      fi
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nYou have a port number of $port. Is this correct [y or n]: "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
         good=1
       fi
-    else
-       good=1
-    fi
+    done
   done
+
   printf "\nSetting VPN Port to $port\n"
   sed -i "s/^port.*/port $port/g" /etc/openvpn/server.conf
-  printf "\nSetting Client to Point to Server at $ip_addr $port\n"
+  printf "\nSetting clients to point to the server at $ip_addr on $traffic port $port.\n"
   sed -i "s/^remote .*/remote $ip_addr $port/g" /etc/openvpn/client.ovpn
 }
 
@@ -643,7 +659,7 @@ unpack_config
 init_setup
 select_traffic
 select_ip
-#select_port
+select_port
 #select_cipher
 #add_routes
 #enable_packet_forward
