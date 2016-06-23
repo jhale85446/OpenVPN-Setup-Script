@@ -164,17 +164,33 @@ function select_traffic
 
 function select_ip
 {
-  good=0
-  while [ $good -eq 0 ]; do
-    printf "\nWhat IPv4 address will the server be operating on?\n"
-    printf "If you are using a NAT, this will be your public facing IP address.\n"
-    printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
-    printf "IPv4 Address: "
-    read ip_addr
+  correct=0
+  while [ $correct -eq 0 ]; do
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nWhat IPv4 address will the server be operating on?\n"
+      printf "If you are using a NAT, this will be your public facing IP address.\n"
+      printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+      printf "IPv4 Address: "
+      read ip_addr
 
-    if [ ! -z ${ip_addr// } ]; then
-      good=1
-    fi
+      if [ ! -z ${ip_addr// } ]; then
+        good=1
+      fi
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nYou have entered and IP address of $ip_addr. Is this correct [y or n]: "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
+    printf "\nIP address of the server set to $ip_addr for the clients.\n"
   done
 }
 
@@ -626,7 +642,7 @@ precheck
 unpack_config
 init_setup
 select_traffic
-#select_ip
+select_ip
 #select_port
 #select_cipher
 #add_routes
