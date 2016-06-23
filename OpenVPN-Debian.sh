@@ -126,10 +126,8 @@ function select_traffic
 
       if [ ! -z ${choice// } ]; then
         if [ $choice -eq 1 ]; then
-          printf "UDP traffic selected.\n"
           traffic="udp"
         elif [ $choice -eq 2 ]; then
-          printf "TCP traffic selected.\n"
           traffic="tcp"
         else
           printf "Please enter either 1 or 2 to select UDP or TCP.\n\n"
@@ -139,7 +137,7 @@ function select_traffic
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "You have selected the traffic type as $traffic. Is this correct [y or n]: "
+      printf "\nYou have selected the traffic type as $traffic. Is this correct [y or n]: "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -150,7 +148,7 @@ function select_traffic
     done
   done
 
-  printf "Setting VPN Traffic Type to $traffic\n"
+  printf "\nSetting VPN Traffic Type to $traffic\n"
   if [ "$traffic" == "udp" ]; then
     sed -i 's/^;proto udp/proto udp/g' /etc/openvpn/server.conf
     sed -i 's/^proto tcp/;proto tcp/g' /etc/openvpn/server.conf
@@ -625,9 +623,9 @@ intro
 precheck
 
 #install_openvpn
-#unpack_config
-#init_setup
-#select_traffic
+unpack_config
+init_setup
+select_traffic
 #select_ip
 #select_port
 #select_cipher
