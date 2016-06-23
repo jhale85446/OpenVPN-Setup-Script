@@ -37,11 +37,18 @@ function unpack_config
   printf "\nUnzipping the sample server config file to use as a base.\n"
   gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz > /etc/openvpn/server.conf
 
-  printf "Getting client config file to use as a base.\n"
+  if [ -f /etc/openvpn/server.conf ]; then
+    printf "Done - Moving on\n"
+  else
+    printf "Something messed up. Exiting.\n"
+    exit 1
+  fi
+
+  printf "\nGetting client config file to use as a base.\n"
   cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /etc/openvpn/client.ovpn
   mkdir /etc/openvpn/clients
 
-  if [ -f /etc/openvpn/server.conf ]; then
+  if [ -f /etc/openvpn/client.ovpn ]; then
     printf "Done - Moving on\n"
   else
     printf "Something messed up. Exiting.\n"
@@ -360,7 +367,9 @@ function select_interface
   sed -i 's/DEFAULT_FORWARD_POLICY="DROP"/DEFAULT_FORWARD_POLICY="ACCEPT"/g' /etc/default/ufw
 
   printf "Adding OpenVPN Firewall Rules\n"
-  sed -i "/^# Don't delete these required lines.*/i # START OPENVPN RULES" /etc/ufw/before.rules
+  if ! grep -q "# START OPENVPN RULES" /etc/ufw/before.rules; then
+    sed -i "/^# Don't delete these required lines.*/i # START OPENVPN RULES" /etc/ufw/before.rules
+  fi
   sed -i "/^# Don't delete these required lines.*/i # NAT table rules" /etc/ufw/before.rules
   sed -i "/^# Don't delete these required lines.*/i *nat" /etc/ufw/before.rules
   sed -i "/^# Don't delete these required lines.*/i :POSTROUTING ACCEPT [0:0]" /etc/ufw/before.rules
@@ -552,14 +561,14 @@ function start_openvpn
 intro
 
 #install_openvpn
-unpack_config
-init_setup
-select_traffic
-select_ip
-select_port
-select_cipher
-add_routes
-enable_packet_forward
+#unpack_config
+#init_setup
+#select_traffic
+#select_ip
+#select_port
+#select_cipher
+#add_routes
+#enable_packet_forward
 
 #install_ufw
 #config_ufw
@@ -567,10 +576,10 @@ enable_packet_forward
 #enable_ufw
 #iptables_persist
 
-#init_rsa_ca
-#gen_dh
-#build_ca
-#start_openvpn
+init_rsa_ca
+gen_dh
+build_ca
+start_openvpn
 exit 0
 
 
