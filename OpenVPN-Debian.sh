@@ -158,7 +158,7 @@ function select_port
        good=1
     fi
   done
-  printf "Setting VPN Port to $port\n"
+  printf "\nSetting VPN Port to $port\n"
   sed -i "s/^port.*/port $port/g" /etc/openvpn/server.conf
   printf "\nSetting Client to Point to Server at $ip_addr $port\n"
   sed -i "s/^remote .*/remote $ip_addr $port/g" /etc/openvpn/client.ovpn
