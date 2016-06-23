@@ -19,9 +19,12 @@ function intro
 
 function precheck
 {
+  printf "\nChecking for previous OpenVPN Installations.\n"
+  found=0
+
   service_running=$(pgrep openvpn | wc -l)
   if [ $service_running -eq 1 ]; then  
-    printf "Service is running\n"
+    found=1
   fi
 }
 
