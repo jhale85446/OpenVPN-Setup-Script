@@ -113,26 +113,41 @@ function init_setup
 function select_traffic
 {
   #Select the type of traffic TCP or UDP
-  while [ "$traffic" == "" ]; do
-    printf "Do you want to use UDP or TCP for VPN traffic?\n"
-    printf "UDP is default. However, many firewalls block non-DNS UDP traffic\n"
-    printf "TCP is recommended.\n\n"
-    printf "1 for UDP\n"
-    printf "2 for TCP\n"
-    printf "\nSelect a traffic type: "
-    read choice
+  correct=0
+  while [ $correct -eq 0 ]; do
+    while [ "$traffic" == "" ]; do
+      printf "Do you want to use UDP or TCP for VPN traffic?\n"
+      printf "UDP is default. However, many firewalls block non-DNS UDP traffic\n"
+      printf "TCP is recommended.\n\n"
+      printf "1 for UDP\n"
+      printf "2 for TCP\n"
+      printf "\nSelect a traffic type: "
+      read choice
 
-    if [ ! -z ${choice// } ]; then
-      if [ $choice -eq 1 ]; then
-        printf "UDP traffic selected.\n"
-        traffic="udp"
-      elif [ $choice -eq 2 ]; then
-        printf "TCP traffic selected.\n"
-        traffic="tcp"
-      else
-        printf "Please enter either 1 or 2 to select UDP or TCP.\n\n"
+      if [ ! -z ${choice// } ]; then
+        if [ $choice -eq 1 ]; then
+          printf "UDP traffic selected.\n"
+          traffic="udp"
+        elif [ $choice -eq 2 ]; then
+          printf "TCP traffic selected.\n"
+          traffic="tcp"
+        else
+          printf "Please enter either 1 or 2 to select UDP or TCP.\n\n"
+        fi
       fi
-    fi
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "You have selected the traffic type as $traffic. Is this correct [y or n]: "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
   done
 
   printf "Setting VPN Traffic Type to $traffic\n"
