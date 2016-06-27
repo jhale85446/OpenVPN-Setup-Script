@@ -3,13 +3,18 @@
 # This is a bash script used to set up OpenVPN on a Debian distro
 # by Josh Hale https://github.com/jhale85446
 
-# Default Values
+# Default and Global Values
 traffic=""
 ip_addr=""
 port=1194
 good=0
 cipher=1
 cipher_output="cipher BF-CBC        # Blowfish (default)"
+
+# Pre-Check Values
+ufw_found=0
+serverkey_found=0
+openvpn_found=0
 
 function intro 
 {
@@ -20,11 +25,20 @@ function intro
 function precheck
 {
   printf "\nChecking for previous OpenVPN Installations.\n"
-  found=0
 
-  service_running=$(pgrep openvpn | wc -l)
-  if [ $service_running -eq 1 ]; then  
-    found=1
+  if [ $(ufw status | grep active | wc -l) -ge 1 ]; then
+    printf "UFW Found.\n"
+    ufw_found=1
+  fi
+
+  if [ -f /etc/openvpn/easy-rsa/keys/server.key ]; then
+    printf "Server Key Found.\n"
+    serverkey_found=1
+  fi
+
+  if [ $(pgrep openvpn | wc -l) -ge 1 ]; then  
+    printf "OpenVPN Found.\n"
+    openvpn_found=1
   fi
 }
 
