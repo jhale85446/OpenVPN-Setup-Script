@@ -224,7 +224,7 @@ function select_port
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "\nYou have a port number of $port. Is this correct [y or n]: "
+      printf "\nYou have entered a port number of $port. Is this correct [y or n]: "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -244,35 +244,51 @@ function select_port
 function select_cipher
 {
   #Select the cipher to use
-  good=0
-  while [ $good -eq 0 ]; do
-    printf "\nWhich cipher do you want to use? Blowfish is default. However, most modern processors have AES built-in and it might be faster.\n\n"
-    printf "1 for Blowfish CBC\n"
-    printf "2 for AES-128 CBC\n"
-    printf "3 for Triple-DES CBC (Not recommended!)\n"
-    printf "\nCipher to use: "
-    read choice
+  correct=0
+  while [ $correct -eq 0 ]; do
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nWhich cipher do you want to use? Blowfish is default. However, most modern processors have AES built-in and it might be faster.\n\n"
+      printf "1 for Blowfish CBC\n"
+      printf "2 for AES-128 CBC\n"
+      printf "3 for Triple-DES CBC (Not recommended!)\n"
+      printf "\nCipher to use: "
+      read choice
 
-    if [ ! -z ${choice// } ]; then
-      if [ $choice -eq 1 ]; then
-        printf "Blowfish CBC Selected.\n"
-        cipher=1
-        cipher_output="cipher BF-CBC        # Blowfish (default)"
-        good=1
-      elif [ $choice -eq 2 ]; then
-        printf "AES-128 CBC Selected.\n"
-        cipher=2
-        cipher_output="cipher AES-128-CBC   # AES"
-        good=1
-      elif [ $choice -eq 3 ]; then
-        printf "Triple-DES CBC Selected.\n"
-        cipher=3
-        cipher_output="cipher DES-EDE3-CBC  # Triple-DES"
-        good=1
-      else
-        printf "Please enter 1, 2, or 3 to select a cipher.\n\n"
+      if [ ! -z ${choice// } ]; then
+        if [ $choice -eq 1 ]; then
+          printf "Blowfish CBC Selected.\n"
+          cipher=1
+          cipher_output="cipher BF-CBC        # Blowfish (default)"
+          good=1
+        elif [ $choice -eq 2 ]; then
+          printf "AES-128 CBC Selected.\n"
+          cipher=2
+          cipher_output="cipher AES-128-CBC   # AES"
+          good=1
+        elif [ $choice -eq 3 ]; then
+          printf "Triple-DES CBC Selected.\n"
+          cipher=3
+          cipher_output="cipher DES-EDE3-CBC  # Triple-DES"
+          good=1
+        else
+          printf "Please enter 1, 2, or 3 to select a cipher.\n\n"
+        fi
       fi
-    fi
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nYou have selected to use $cipher_output. Is this correct [y or n]: "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
+
   done
 
   sed -i 's/^;cipher.*/cipher x/g' /etc/openvpn/client.ovpn
@@ -660,7 +676,7 @@ init_setup
 select_traffic
 select_ip
 select_port
-#select_cipher
+select_cipher
 #add_routes
 #enable_packet_forward
 
