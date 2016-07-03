@@ -339,7 +339,7 @@ function add_routes
     printf "\nSubnet [Press Enter on Empty Line to Abort Entry]: "
     read response
 
-    if [ ! -z ${response// } ]; then  
+    if [ ! -z ${response// } ]; then
       subnets[${subnet_count}]=$response
       (( subnet_count += 1 ))
     fi
@@ -668,7 +668,7 @@ function start_openvpn
 # Main Program
 
 intro
-precheck
+#precheck
 
 #install_openvpn
 unpack_config
