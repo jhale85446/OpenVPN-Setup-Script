@@ -730,26 +730,26 @@ function start_openvpn
 intro
 #precheck
 
-#install_openvpn
-#unpack_config
-#init_setup
-#select_traffic
-#select_ip
-#select_port
-#select_cipher
-#add_routes
-#enable_packet_forward
+install_openvpn
+unpack_config
+init_setup
+select_traffic
+select_ip
+select_port
+select_cipher
+add_routes
+enable_packet_forward
 
-#install_ufw
+install_ufw
 config_ufw
 select_interface
 enable_ufw
-#iptables_persist
+iptables_persist
 
-#init_rsa_ca
-#gen_dh
-#build_ca
-#start_openvpn
+init_rsa_ca
+gen_dh
+build_ca
+start_openvpn
 exit 0
 
 
