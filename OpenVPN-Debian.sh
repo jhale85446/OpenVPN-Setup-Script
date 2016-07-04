@@ -361,7 +361,7 @@ function add_routes
     good=0
     while [ $good -eq 0 ]; do
       if [ $subnet_count -eq 0 ]; then
-        printf "\nYou have chosen not to add any subnets to the clients. Is this correct? [y or n]:"
+        printf "\nYou have chosen not to add any subnets to the clients. Is this correct? [y or n] "
       else
         printf "\nYou have elected to add routes to the following networks:\n"
         count=${#subnets[@]}
@@ -542,9 +542,9 @@ function select_interface
     sed -i "s#^-A POSTROUTING -s 10.*#-A POSTROUTING -s 10.8.0.0/8 -o $interface -j MASQUERADE#g" /etc/ufw/before.rules
   fi
 
-  if ! grep -q "COMMIT" /etc/ufw/before.rules; then
+#  if ! grep -q "COMMIT" /etc/ufw/before.rules; then
     sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
-  fi
+#  fi
 
   if ! grep -q "# END OPENVPN RULES" /etc/ufw/before.rules; then
     sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
@@ -735,19 +735,19 @@ intro
 #precheck
 
 #install_openvpn
-unpack_config
-init_setup
-select_traffic
-select_ip
-select_port
-select_cipher
-add_routes
-enable_packet_forward
+#unpack_config
+#init_setup
+#select_traffic
+#select_ip
+#select_port
+#select_cipher
+#add_routes
+#enable_packet_forward
 
-install_ufw
+#install_ufw
 config_ufw
 select_interface
-enable_ufw
+#enable_ufw
 #iptables_persist
 
 #init_rsa_ca
