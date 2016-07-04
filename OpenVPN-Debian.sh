@@ -403,44 +403,68 @@ function enable_packet_forward
 
 function config_ufw
 {
-  printf "\nConfiguring UFW and OpenVPN\n"
-  printf "\nThis script will open SSH and port $port/$traffic by default.\n"
-  good=0
-  add_exceptions=0
-  while [ $good -eq 0 ]; do
-    printf "\nWould you like to open any other ports? [y or n] "
-    read choice
-    if [ "$choice" == "y" ]; then
-      add_exceptions=1
-      good=1
-    elif [ "$choice" == "n" ]; then
-      good=1
-    fi
-  done
-
-  exceptions_count=0
-  while [ $add_exceptions -eq 1 ]; do
+  correct=0
+  while [ $correct -eq 0 ]; do
+    printf "\nConfiguring UFW and OpenVPN\n"
+    printf "\nThis script will open SSH and port $port/$traffic by default.\n"
     good=0
-    printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)\n"
-    printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
-    printf "Example: 80/tcp\n"
-    printf "\nPort/Protocol [Press Enter on Empty Line to Abort Entry]: "
-    read response
-
-    if [ ! -z ${response// } ]; then  
-      exceptions[${exceptions_count}]=$response
-     (( exceptions_count += 1 ))
-    fi
-
+    add_exceptions=0
     while [ $good -eq 0 ]; do
       printf "\nWould you like to open any other ports? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
-        good=1
         add_exceptions=1
+        good=1
       elif [ "$choice" == "n" ]; then
         good=1
-        add_exceptions=0
+      fi
+    done
+
+    exceptions_count=0
+    while [ $add_exceptions -eq 1 ]; do
+      good=0
+      printf "\nPlease enter the port and protocol as follows port/protocol (lowercase)\n"
+      printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+      printf "Example: 80/tcp\n"
+      printf "\nPort/Protocol [Press Enter on Empty Line to Abort Entry]: "
+      read response
+
+      if [ ! -z ${response// } ]; then  
+        exceptions[${exceptions_count}]=$response
+       (( exceptions_count += 1 ))
+      fi
+
+      while [ $good -eq 0 ]; do
+        printf "\nWould you like to open any other ports? [y or n] "
+        read choice
+        if [ "$choice" == "y" ]; then
+          good=1
+          add_exceptions=1
+        elif [ "$choice" == "n" ]; then
+          good=1
+          add_exceptions=0
+        fi
+      done
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      if [ $exceptions_count -eq 0 ]; then
+        printf "\nYou have chosen not to open any additional ports. Is this correct? [y or n]:"
+      else
+        printf "\nYou have elected to open the following ports:\n"
+        count=${#exceptions[@]}
+        for (( i=0;i<$count;i++)); do
+          printf "\t${exceptions[${i}]}\n"
+        done
+        printf "Is this correct? [y or n]:"
+      fi
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
       fi
     done
   done
@@ -703,10 +727,10 @@ select_ip
 select_port
 select_cipher
 add_routes
-#enable_packet_forward
+enable_packet_forward
 
-#install_ufw
-#config_ufw
+install_ufw
+config_ufw
 #select_interface
 #enable_ufw
 #iptables_persist
