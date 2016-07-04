@@ -288,7 +288,6 @@ function select_cipher
         good=1
       fi
     done
-
   done
 
   sed -i 's/^;cipher.*/cipher x/g' /etc/openvpn/client.ovpn
@@ -450,7 +449,7 @@ function config_ufw
     good=0
     while [ $good -eq 0 ]; do
       if [ $exceptions_count -eq 0 ]; then
-        printf "\nYou have chosen not to open any additional ports. Is this correct? [y or n]:"
+        printf "\nYou have chosen not to open any additional ports. Is this correct? [y or n] "
       else
         printf "\nYou have elected to open the following ports:\n"
         count=${#exceptions[@]}
@@ -486,15 +485,31 @@ function config_ufw
 
 function select_interface
 {
-  ifconfig
-  printf "\nYou need to select an interface for OpenVPN to operate on.\n"
-  printf "Make sure you look at the interface list above, not all distros use eth0 anymore!\n"
-  printf "Enter the interface [Enter for eth0]: "
-  read interface
+  correct=0
+  while [ $correct -eq 0 ]; do
+    clear
+    ifconfig
+    printf "\nYou need to select an interface for OpenVPN to operate on.\n"
+    printf "Make sure you look at the interface list above, not all distros use eth0 anymore!\n"
+    printf "Enter the interface [Enter for eth0]: "
+    read interface
 
-  if [ -z ${interface// } ]; then
-    interface="eth0"
-  fi
+    if [ -z ${interface// } ]; then
+      interface="eth0"
+    fi
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nYou have selected to use interface: $interface. Is this correct? [y or n] "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
+  done
 
   printf "\nSetting up UFW to use interface $interface\n"
 
@@ -731,8 +746,8 @@ enable_packet_forward
 
 install_ufw
 config_ufw
-#select_interface
-#enable_ufw
+select_interface
+enable_ufw
 #iptables_persist
 
 #init_rsa_ca
