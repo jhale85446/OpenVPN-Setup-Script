@@ -137,7 +137,7 @@ function select_traffic
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "\nYou have selected the traffic type as $traffic. Is this correct [y or n]: "
+      printf "\nYou have selected the traffic type as $traffic. Is this correct? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -181,7 +181,7 @@ function select_ip
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "\nYou have entered and IP address of $ip_addr. Is this correct [y or n]: "
+      printf "\nYou have entered and IP address of $ip_addr. Is this correct? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -224,7 +224,7 @@ function select_port
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "\nYou have entered a port number of $port. Is this correct [y or n]: "
+      printf "\nYou have entered a port number of $port. Is this correct? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -279,7 +279,7 @@ function select_cipher
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "\nYou have selected to use $cipher_output. Is this correct [y or n]: "
+      printf "\nYou have selected to use $cipher_output. Is this correct? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
         correct=1
@@ -369,7 +369,7 @@ function add_routes
         for (( i=0;i<$count;i++)); do
           printf "\t${subnets[${i}]}\n"
         done
-        printf "Is this correct? [y or n]:"
+        printf "Is this correct? [y or n] "
       fi
       read choice
       if [ "$choice" == "y" ]; then
@@ -457,7 +457,7 @@ function config_ufw
         for (( i=0;i<$count;i++)); do
           printf "\t${exceptions[${i}]}\n"
         done
-        printf "Is this correct? [y or n]:"
+        printf "Is this correct? [y or n] "
       fi
       read choice
       if [ "$choice" == "y" ]; then
@@ -646,7 +646,7 @@ function init_rsa_ca
 
     good=0
     while [ $good -eq 0 ]; do
-      printf "Is this information correct [y or n]: "
+      printf "Is this information correct? [y or n] "
       read choice
       if [ ! -z ${choice// } ]; then
         if [ "$choice" == "y" ]; then
