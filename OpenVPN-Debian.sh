@@ -542,9 +542,9 @@ function select_interface
     sed -i "s#^-A POSTROUTING -s 10.*#-A POSTROUTING -s 10.8.0.0/8 -o $interface -j MASQUERADE#g" /etc/ufw/before.rules
   fi
 
-#  if ! grep -q "COMMIT" /etc/ufw/before.rules; then
+  if ! grep -q "^COMMIT" /etc/ufw/before.rules; then
     sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
-#  fi
+  fi
 
   if ! grep -q "# END OPENVPN RULES" /etc/ufw/before.rules; then
     sed -i "/^# Don't delete these required lines.*/i # END OPENVPN RULES" /etc/ufw/before.rules
