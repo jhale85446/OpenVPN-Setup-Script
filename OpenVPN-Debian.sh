@@ -317,48 +317,73 @@ function select_cipher
 function add_routes
 {
   # Add subnet routes to be pushed to the clients
-  good=0
-  add_subnets=0
-  while [ $good -eq 0 ]; do
-    printf "\nWould you like to push any routes to local (server side) subnets to the clients? [y or n] "
-    read choice
-    if [ "$choice" == "y" ]; then
-      add_subnets=1
-      good=1
-    elif [ "$choice" == "n" ]; then
-      good=1
-    fi
-  done
-
-  subnet_count=0
-  while [ $add_subnets -eq 1 ]; do
+  correct=0
+  while [ $correct -eq 0 ]; do
     good=0
-    printf "\nPlease enter the subnet in the following format: IPv4subnet IPv4netmask\n"
-    printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
-    printf "Example: 192.168.1.0 255.255.255.0\n"
-    printf "\nSubnet [Press Enter on Empty Line to Abort Entry]: "
-    read response
-
-    if [ ! -z ${response// } ]; then
-      subnets[${subnet_count}]=$response
-      (( subnet_count += 1 ))
-    fi
-
+    add_subnets=0
     while [ $good -eq 0 ]; do
-      printf "\nWould you like to push any additional routes to local (server side) subnets to the clients? [y or n] "
+      printf "\nWould you like to push any routes to local (server side) subnets to the clients? [y or n] "
       read choice
       if [ "$choice" == "y" ]; then
-        good=1
         add_subnets=1
+        good=1
       elif [ "$choice" == "n" ]; then
         good=1
-        add_subnets=0
+      fi
+    done
+
+    subnet_count=0
+    while [ $add_subnets -eq 1 ]; do
+      good=0
+      printf "\nPlease enter the subnet in the following format: IPv4subnet IPv4netmask\n"
+      printf "This script will not check the validity of your entry so make sure it is correct before hitting enter!\n"
+      printf "Example: 192.168.1.0 255.255.255.0\n"
+      printf "\nSubnet [Press Enter on Empty Line to Abort Entry]: "
+      read response
+
+      if [ ! -z ${response// } ]; then
+        subnets[${subnet_count}]=$response
+        (( subnet_count += 1 ))
+      fi
+
+      while [ $good -eq 0 ]; do
+        printf "\nWould you like to push any additional routes to local (server side) subnets to the clients? [y or n] "
+        read choice
+        if [ "$choice" == "y" ]; then
+          good=1
+          add_subnets=1
+        elif [ "$choice" == "n" ]; then
+          good=1
+          add_subnets=0
+        fi
+      done
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      if [ $subnet_count -eq 0 ]; then
+        printf "\nYou have chosen not to add any subnets to the clients. Is this correct? [y or n]:"
+      else
+        printf "\nYou have elected to add routes to the following networks:\n"
+        count=${#subnets[@]}
+        for (( i=0;i<$count;i++)); do
+          printf "\t${subnets[${i}]}\n"
+        done
+        printf "Is this correct? [y or n]:"
+      fi
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
       fi
     done
   done
 
   if [ $subnet_count -gt 0 ]; then
     count=${#subnets[@]}
+    printf "\n"
     for (( i=0;i<$count;i++)); do
       subnet_string="push \"route ${subnets[${i}]}\""
       printf "Adding Client Route to ${subnets[${i}]}\n"
@@ -677,7 +702,7 @@ select_traffic
 select_ip
 select_port
 select_cipher
-#add_routes
+add_routes
 #enable_packet_forward
 
 #install_ufw
