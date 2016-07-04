@@ -487,7 +487,6 @@ function select_interface
 {
   correct=0
   while [ $correct -eq 0 ]; do
-    clear
     ifconfig
     printf "\nYou need to select an interface for OpenVPN to operate on.\n"
     printf "Make sure you look at the interface list above, not all distros use eth0 anymore!\n"
@@ -537,13 +536,10 @@ function select_interface
   if ! grep -q "# Allow traffic from OpenVPN client to" /etc/ufw/before.rules; then
     sed -i "/^# Don't delete these required lines.*/i # Allow traffic from OpenVPN client to $interface" /etc/ufw/before.rules
     sed -i "/^# Don't delete these required lines.*/i -A POSTROUTING -s 10.8.0.0/8 -o $interface -j MASQUERADE" /etc/ufw/before.rules
+    sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
   else
     sed -i "s/^# Allow traffic from OpenVPN client to.*/# Allow traffic from OpenVPN client to $interface/g" /etc/ufw/before.rules
     sed -i "s#^-A POSTROUTING -s 10.*#-A POSTROUTING -s 10.8.0.0/8 -o $interface -j MASQUERADE#g" /etc/ufw/before.rules
-  fi
-
-  if ! grep -q "^COMMIT" /etc/ufw/before.rules; then
-    sed -i "/^# Don't delete these required lines.*/i COMMIT" /etc/ufw/before.rules
   fi
 
   if ! grep -q "# END OPENVPN RULES" /etc/ufw/before.rules; then
@@ -747,7 +743,7 @@ intro
 #install_ufw
 config_ufw
 select_interface
-#enable_ufw
+enable_ufw
 #iptables_persist
 
 #init_rsa_ca
