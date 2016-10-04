@@ -117,8 +117,8 @@ function select_traffic
   while [ $correct -eq 0 ]; do
     while [ "$traffic" == "" ]; do
       printf "Do you want to use UDP or TCP for VPN traffic?\n"
-      printf "UDP is default. However, many firewalls block non-DNS UDP traffic\n"
-      printf "TCP is recommended.\n\n"
+      printf "UDP is default. However, some firewalls block non-DNS UDP traffic.\n"
+      printf "UDP is recomended if firewalls are not an issue."
       printf "1 for UDP\n"
       printf "2 for TCP\n"
       printf "\nSelect a traffic type: "
@@ -202,7 +202,7 @@ function select_port
     good=0
     while [ $good -eq 0 ]; do
       if [ "$traffic" == "udp" ]; then
-        printf "\nWhich port would you like to use? Default is port 1194. Many firewalls block non-DNS UDP traffic. DNS is on port 53.\n"
+        printf "\nWhich port would you like to use? Default is port 1194. Some firewalls may block non-DNS UDP traffic. DNS is on port 53.\n"
       else
         printf "\nWhich port would you like to use? Default is port 1194. Firewalls may block uncommon TCP ports. You may want to use one of these:\n"
         printf "HTTP: 80\n"
