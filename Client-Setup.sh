@@ -19,8 +19,13 @@ while [ $add_clients -eq 1 ]; do
   eval ./build-key ${clientname}
 
   mkdir /etc/openvpn/clients/${clientname}
-  cp /etc/openvpn/easy-rsa/keys/client.ovpn /etc/openvpn/clients/${clientname}
+  cp /etc/openvpn/client.ovpn /etc/openvpn/clients/${clientname}
+
   cd /etc/openvpn/clients/${clientname}
+
+  echo '<ca>' >> client.ovpn
+  cat /etc/openvpn/ca.crt >> client.ovpn
+  echo '</ca>' >> client.ovpn
 
   echo '<cert>' >> client.ovpn
   cat /etc/openvpn/easy-rsa/keys/${clientname}.crt >> client.ovpn
