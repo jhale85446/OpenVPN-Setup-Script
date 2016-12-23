@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is a bash script used to set up OpenVPN on a Debian distro
-# by Josh Hale https://github.com/jhale85446
+# by Josh Hale "sn0wfa11" https://github.com/sn0wfa11
 
 # Default and Global Values
 traffic=""
@@ -680,6 +680,7 @@ function init_rsa_ca
   sed -i "s/^export KEY_EMAIL.*/$key_email/g" /etc/openvpn/easy-rsa/vars
   sed -i "s/^export KEY_OU.*/$key_ou/g" /etc/openvpn/easy-rsa/vars
   sed -i 's/^export KEY_NAME.*/export KEY_NAME="server"/g' /etc/openvpn/easy-rsa/vars
+  sed -i 's/^export KEY_CONFIG.*/export KEY_CONFIG=$EASY_RSA/openssl-1.0.0.cnf' /etc/openvpn/easy-rsa/vars
   printf "_________________________________________________________________\n"
 }
 
@@ -725,6 +726,83 @@ function start_openvpn
   printf "_________________________________________________________________\n"
 }
 
+function client_setup
+{
+  correct=0
+  while [ $correct -eq 0 ]; do
+    printf "\nIf everthing is running, you can setup clients now.\n"
+    good=0
+    add_clients=0
+    while [ $good -eq 0 ]; do
+      printf "\nWould you like to add clients now? [y or n] "
+      read choice
+      if [ "$choice" == "y" ]; then
+        add_clients=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
+
+    while [ $add_clients -eq 1 ]; do
+      printf "\nPlease enter the name of the client: "
+      read response
+
+      if [ ! -z ${response// } ]; then  
+        clientname=$response
+      fi
+
+      # Add a client
+      printf "Setting up client $clientname.\n"
+      cd /etc/openvpn/easy-rsa
+      eval '. ./vars'
+      eval ./build-key ${clientname}
+
+      mkdir /etc/openvpn/clients/${clientname}
+      cp /etc/openvpn/easy-rsa/keys/client.ovpn /etc/openvpn/clients/${clientname}
+      cd /etc/openvpn/clients/${clientname}
+
+      echo '<cert>' >> client.ovpn
+      cat /etc/openvpn/easy-rsa/keys/${clientname}.crt >> client.ovpn
+      echo '</cert>' >> client.ovpn
+
+      echo '<key>' >> client.ovpn
+      cat /etc/openvpn/easy-rsa/keys/${clientname}.key >> client.ovpn
+      echo '</key>' >> client.ovpn
+
+      printf "Client: $clientname has been created.\n\n"
+      printf "The client.ovpn file for $clientname is localted at:\n"
+      printf "/etc/openvpn/clients/$clientname\n\n"
+      printf "This is a unified file with all the certificates needed. Copy this to the client for setup.\n"
+
+      good=0
+      while [ $good -eq 0 ]; do
+        printf "\nWould you like to add any more clients? [y or n] "
+        read choice
+        if [ "$choice" == "y" ]; then
+          good=1
+          add_exceptions=1
+        elif [ "$choice" == "n" ]; then
+          good=1
+          add_exceptions=0
+        fi
+      done
+    done
+
+    good=0
+    while [ $good -eq 0 ]; do
+      printf "\nYou have chosen not to add any clients. Is this correct? [y or n] "
+      read choice
+      if [ "$choice" == "y" ]; then
+        correct=1
+        good=1
+      elif [ "$choice" == "n" ]; then
+        good=1
+      fi
+    done
+  done
+}
+
 # Main Program
 
 intro
@@ -750,6 +828,7 @@ init_rsa_ca
 gen_dh
 build_ca
 start_openvpn
+client_setup
 exit 0
 
 
