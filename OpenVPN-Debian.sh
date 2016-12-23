@@ -781,10 +781,10 @@ function client_setup
         read choice
         if [ "$choice" == "y" ]; then
           good=1
-          add_exceptions=1
+          add_clients=1
         elif [ "$choice" == "n" ]; then
           good=1
-          add_exceptions=0
+          add_clients=0
         fi
       done
     done

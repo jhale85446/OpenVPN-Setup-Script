@@ -3,6 +3,7 @@
 # This is a bash script used to set up OpenVPN Clients
 # by Josh Hale "sn0wfa11" https://github.com/sn0wfa11
 
+add_clients=1
 while [ $add_clients -eq 1 ]; do
   printf "\nPlease enter the name of the client: "
   read response
@@ -40,10 +41,10 @@ while [ $add_clients -eq 1 ]; do
     read choice
     if [ "$choice" == "y" ]; then
       good=1
-      add_exceptions=1
+      add_clients=1
     elif [ "$choice" == "n" ]; then
       good=1
-      add_exceptions=0
+      add_clients=0
     fi
   done
 done
