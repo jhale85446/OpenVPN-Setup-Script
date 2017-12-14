@@ -1,8 +1,6 @@
 # OpenVPN-Setup-Script
 Bash Script Project to Setup OpenVPN on various Distros
 
-## This project just started. The first script is in development.
-
 ## Debian
 The Debian script is based on instructions provided by [Alvin Wan at Digital Ocean](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-debian-8)
 
